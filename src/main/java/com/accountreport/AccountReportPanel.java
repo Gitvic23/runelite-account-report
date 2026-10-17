@@ -1,6 +1,7 @@
 package com.accountreport;
 
 import com.accountreport.core.ReportFormatter;
+import com.accountreport.core.Progression;
 import com.accountreport.core.Snapshot;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -57,7 +58,12 @@ final class AccountReportPanel extends PluginPanel
             + "\n\nQuests: " + formatter.freshness(s.questsAt, session)
             + "\n\nBank: " + (s.bank.observedAt == null ? "Bank not yet observed" : formatter.freshness(s.bank.observedAt, session))
             + "\nOpen your bank to refresh.\n\nInventory: " + formatter.freshness(s.inventory.observedAt, session)
-            + "\n\nEquipment: " + formatter.freshness(s.equipment.observedAt, session));
+            + "\n\nEquipment: " + formatter.freshness(s.equipment.observedAt, session)
+            + "\n\nKnight Waves training: " + s.unlocks.stream().filter(r -> r.kind == Progression.Unlock.KNIGHT_WAVES)
+                .map(r -> r.value).findFirst().orElse("Unknown")
+            + "\nUnlock flags observed: " + s.unlocks.stream().filter(r -> r.observedAt != null && !r.value.equals("Unknown")).count()
+            + "\nBoss / encounter counts observed: " + s.bossCounts.size()
+            + "\nOpen Combat Achievements > Bosses > boss details to refresh a count. Missing bosses remain unknown.");
         export.setEnabled(true); copy.setEnabled(true);
     }
 

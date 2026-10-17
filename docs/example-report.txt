@@ -6,7 +6,7 @@ Character: Synthetic Iron
 Account type: Ironman | World profile: STANDARD
 Combat level: 90 | Total level: 1500
 Generated: 2026-10-17 11:02:00 -05:00 [America/Chicago]
-Plugin version: 1.0.0 | Report format: 1
+Plugin version: 1.1.0 | Report format: 2
 Identity observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
 Skills observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
 Quests observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
@@ -27,7 +27,11 @@ Container ownership does not reveal contents, charges, stored supplies or accoun
 Useful-item matching covers only the bundled catalog; absence does not prove non-ownership.
 Quest API entries include miniquests/subquests; this API exposes no reliable type flag.
 Quest counts are API-entry counts, not a count of full quests or quest points.
-Deferred: diaries, Slayer task/points/rewards, minigame currencies, unlock flags, Word export.
+Unlock flags are direct observations, not a guarantee a prayer is usable at current levels or in every world.
+Boss/encounter counts are observed totals, not session kills. Unlisted bosses are Unknown, not zero.
+Open your own Combat Achievements boss details to observe existing counts; personal KC messages also update them.
+No hiscores lookup, other players' logs, inferred KC, or automatic interface/game actions are used.
+Deferred: diaries, Slayer task/points/rewards, minigame currencies, other unlock flags, Word export.
 Private identifiers and credentials are never included. No account data is sent anywhere.
 Disabled sections also exclude their containers from the useful-items summary.
 
@@ -45,6 +49,23 @@ Not started (1):
   Dragon Slayer II
 Unknown (1):
   Future API entry
+
+VERIFIED UNLOCK FLAGS (last observed)
+Augury unlock flag: Unknown | Not yet observed / unavailable
+Deadeye unlock flag: Not unlocked | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Knight Waves training: Completed | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Mystic Vigour unlock flag: Not unlocked | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Preserve unlock flag: Unlocked | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Rigour unlock flag: Not unlocked | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Knight Waves is the training requirement used by the prayer interface; levels and other requirements remain separate.
+A scroll unlock flag does not mean the prayer is active or usable with your current stats.
+
+BOSS / ENCOUNTER COUNTS (last-observed totals)
+Barrows | Count 42 | Source: personal Combat Achievements boss page | 2026-10-17 10:00:00 -05:00 [America/Chicago] (cached observation; may be stale)
+Corrupted Gauntlet | Count 0 | Source: personal Combat Achievements boss page | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Gauntlet | Count 3 | Source: personal game message | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Unlisted bosses: Unknown. Open Combat Achievements > Bosses > a boss's details to refresh it.
+Raid modes and different encounters are separate; counts are never added together.
 
 BANK (last observed)
 2026-10-16 11:00:00 -05:00 [America/Chicago] (cached observation; may be stale)

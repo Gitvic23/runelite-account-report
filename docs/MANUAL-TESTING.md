@@ -14,3 +14,5 @@ Run these checks yourself in the development client. No automated game input is 
 10. **Automatic exports.** Default off: no reports until manual export. Turn it on, wait at least a minute, and check one latest-file update. Frequent XP/item changes must not write a report every event/tick. Confirm another update after another minute, manual exports still work, and turning auto off stops periodic report writes (snapshot caching continues). Double-click Export: no overlapping/partial writes. Disk/clipboard failures should produce clear feedback.
 
 Record RuneLite/plugin/Windows/Java versions, which checks passed/failed and exact mismatches. Review logs/screenshots before sharing. Plugin Hub review, if requested in the future, would not replace functional testing.
+
+Version 1.1 also requires the [unlock/boss-counter checks](PROGRESSION.md#storage-settings-and-accuracy-checks): Knight Waves, prayer unlock flags, explicit zero versus unobserved counts, normal/harder modes, personal system updates, cache upgrade/restart and character isolation. The original user-confirmed export does not validate these new fields until they are checked in-game.

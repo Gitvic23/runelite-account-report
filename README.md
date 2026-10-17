@@ -9,6 +9,8 @@ This is a **development plugin**, not a reviewed or published Plugin Hub install
 - Display name, account type including unranked Group Ironman, combat/total levels, timezone, plugin/report versions and independent observation times.
 - Every skill in the current client enum, actual level, XP and XP to the next actual level. Maximum actual level shows N/A. Includes Sailing on the tested release; no fixed skill count.
 - Every quest API entry grouped by Completed / In progress / Not started / Unknown, with counts and quest points. Miniquests/subquests are included but not separately classified: the API exposes no reliable type flag.
+- Knight Waves training completion and direct Rigour, Augury, Preserve, Deadeye and Mystic Vigour unlock flags, each with an observation time. Unlocks are separate from prayer-level/Defence requirements and temporary world overrides.
+- Personal boss/encounter totals from your own Combat Achievements boss details and supported system KC messages. Existing totals can be observed by opening boss pages; unobserved bosses stay Unknown, not zero. Counts, timestamps and sources persist per character; raid modes stay separate.
 - Full received bank container, independent of searches, tabs and filters, with alphabetical item names, original IDs and quantities. Placeholders and bank fillers are excluded.
 - Inventory and equipment, with independent timestamps and occupied equipment slots. Valid empty containers differ from unavailable containers.
 - Useful progression items: rune pouches, herb sack, gem bag, seed box, fishing barrels, forestry kits/baskets, essence pouches, graceful, Slayer helmets, rune crossbow, dragon defender, fire cape, Barrows gloves and common teleport jewelry. The [maintainable catalog](src/main/resources/useful-items.tsv) contains verified IDs and named official constants.
@@ -30,6 +32,21 @@ All production file I/O uses RuneLite's current `Filepath` API in its plugin-own
 **Outside coverage:** POH, STASH, seed vault, death/group storage, potion storage and contents of pouches/sacks/bags/barrels. Item presence does not prove stored supplies, charges, usability or account unlocks. Unrecognized items remain in the full lists but may not match the summary catalog.
 
 **Deferred:** achievement diaries, current Slayer task, Slayer points/reward unlocks, minigame currencies/rewards, other account flags and Word output. These require further state-specific verification and are never filled with guessed zeros. See [API evidence and decisions](docs/DEVELOPMENT.md).
+
+## Version 1.1: unlocks, boss counts and updating
+
+The report now includes **VERIFIED UNLOCK FLAGS** and **BOSS / ENCOUNTER COUNTS**; both sections default to enabled. The sidebar also shows Knight Waves status and the number of observed encounters. Log in and export to refresh unlocks. To observe an existing boss total, open the game's **Combat Achievements → Bosses → the boss's details**, wait a few seconds, and export. Repeat for bosses you want covered. Supported personal kill-count messages update totals as you play with the plugin enabled. No hiscores service, account-data upload, automated clicks or gameplay actions are used.
+
+See [the progression guide](docs/PROGRESSION.md) for coverage, examples and manual checks. Counts are last-observed lifetime/encounter totals, not kills recorded since installation. Only an explicitly observed zero becomes zero; missing bosses remain unknown. This version does not automatically fetch every historical boss total at login or read another player's POH log.
+
+To update on Windows, close the development client, [open this branch](https://github.com/Gitvic23/runelite-account-report/tree/account-report-exporter), and choose **Code → Download ZIP**. Extract to a new project folder outside `.runelite`, open PowerShell there, and run:
+
+```powershell
+.\gradlew.bat clean build
+.\gradlew.bat run
+```
+
+If you cloned with Git instead, use `git pull --ff-only origin account-report-exporter` on that branch, then the same Gradle commands. Keep your existing `.runelite\plugin-data\account-report-exporter` folder: valid version-1 caches migrate automatically to schema 2, preserving bank contents/times and the stable latest-report filename. No cache deletion or RuneLite reinstallation is needed. Version 1.0 cannot read schema 2, so avoid alternating old/new development copies; keep a private backup of the plugin data folder if you need to revert. Do not upload that backup or include credentials. Jagex login preparation is unchanged; refresh the local development login through the [official workflow](docs/JAGEX-ACCOUNT-WINDOWS.md) if it has expired.
 
 ## Windows: first-time setup
 
@@ -105,6 +122,6 @@ The plugin and development launcher compile against real RuneLite artifacts. Tes
 
 On Linux/macOS use `./gradlew clean build` and `./gradlew run`. `./gradlew coreTest` exercises the core independently of RuneLite dependency access. `./gradlew exampleReport` regenerates the sample through the real formatter.
 
-Responsibilities are separated: `RuneLiteCollector` reads client APIs; `core/` owns immutable snapshots, isolation, storage schema, formatting and reports; `RuneLiteFiles` confines disk writes; `AccountReportPanel`/`AccountReportConfig` provide UI/settings; `AccountReportPlugin` coordinates client-thread collection, worker I/O and EDT updates. No gameplay automation, input generation or game-action modification is implemented.
+Responsibilities are separated: `RuneLiteCollector` and `ProgressionCollector` read client APIs; `core/` owns immutable snapshots, isolation, storage schema, formatting and reports; `RuneLiteFiles` confines disk writes; `AccountReportPanel`/`AccountReportConfig` provide UI/settings; `AccountReportPlugin` coordinates client-thread collection, worker I/O and EDT updates. No gameplay automation, input generation or game-action modification is implemented.
 
 Licensed under [BSD-2-Clause](LICENSE). See [third-party notices](THIRD-PARTY-NOTICES.md) and [verified API sources](docs/DEVELOPMENT.md).

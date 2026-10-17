@@ -57,7 +57,7 @@ public class SnapshotStoreTest
     @Test public void corruptTruncatedAndFutureVersionCachesFailSafely() throws Exception
     {
         String valid = SnapshotStore.encode(Fixtures.character().build());
-        for (String data : List.of("garbage", valid.replace("schema=1", "schema=999"),
+        for (String data : List.of("garbage", valid.replace("schema=2", "schema=999"),
             valid.replace("skills.count=2", "skills.count=999999999"), valid.replace("skillsAt=", "missingSkillsAt=")))
         {
             MemoryFiles files = new MemoryFiles(); files.data.put("cache-" + Fixtures.KEY + ".properties", data);

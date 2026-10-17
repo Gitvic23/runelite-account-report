@@ -112,4 +112,30 @@ public class ReportFormatterTest
         assertFalse(c.groups.get("Dragon defender").contains(20143));
         assertTrue(c.groups.get("Forestry kit and baskets").contains(28143));
     }
+
+    @Test public void progressionShowsKnownZeroAndUnknownSeparatelyWithSourceAndTime()
+    {
+        Snapshot.Builder b = Fixtures.character();
+        b.unlocks = List.of(new Snapshot.UnlockRow(Progression.Unlock.KNIGHT_WAVES, "Completed", Fixtures.TIME));
+        b.bossCounts = List.of(new Snapshot.BossCount("Zulrah", 0, Fixtures.TIME.minusSeconds(3600), Progression.BossSource.COMBAT_ACHIEVEMENTS));
+        String text = report(b);
+        assertTrue(text.contains("Knight Waves training: Completed"));
+        assertTrue(text.contains("Zulrah | Count 0 | Source: personal Combat Achievements boss page"));
+        assertTrue(text.contains("Unlisted bosses: Unknown"));
+        assertTrue(text.contains("cached observation; may be stale"));
+        assertFalse(text.contains("Piety: Usable"));
+    }
+
+    @Test public void newSectionsCanBeDisabledAndBossRowsHaveDeterministicOrdering()
+    {
+        Snapshot.Builder b = Fixtures.character();
+        Snapshot.BossCount z = new Snapshot.BossCount("Zulrah", 1, Fixtures.TIME, Progression.BossSource.GAME_MESSAGE);
+        Snapshot.BossCount a = new Snapshot.BossCount("Alchemical Hydra", 2, Fixtures.TIME, Progression.BossSource.GAME_MESSAGE);
+        b.bossCounts = List.of(z, a); String first = report(b);
+        b.bossCounts = List.of(a, z); assertEquals(first, report(b));
+        assertTrue(first.indexOf("Alchemical Hydra | Count") < first.indexOf("Zulrah | Count"));
+        String disabled = formatter.format(b.build(), new ReportOptions(true, true, true, true, true, true, false, false), Fixtures.TIME, null);
+        assertFalse(disabled.contains("Alchemical Hydra | Count"));
+        assertFalse(disabled.contains("Knight Waves training:"));
+    }
 }

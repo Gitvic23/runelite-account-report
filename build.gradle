@@ -10,7 +10,7 @@ repositories {
 
 def runeLiteVersion = 'latest.release'
 group = 'com.accountreport'
-version = '1.0.0'
+version = '1.1.0'
 
 dependencies {
     compileOnly "net.runelite:client:${runeLiteVersion}"
@@ -43,6 +43,7 @@ sourceSets {
     coreTest {
         java.srcDir 'src/test/java'
         java.include 'com/accountreport/core/**'
+        resources.srcDir 'src/test/resources'
         compileClasspath += sourceSets.core.output
         runtimeClasspath += sourceSets.core.output
     }

@@ -6,6 +6,8 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -47,7 +49,7 @@ public final class SnapshotStore
     static String encode(Snapshot s) throws IOException
     {
         Properties p = new Properties();
-        put(p, "schema", 1); put(p, "key", s.key); put(p, "reportId", s.reportId);
+        put(p, "schema", 2); put(p, "key", s.key); put(p, "reportId", s.reportId);
         put(p, "name", s.name); put(p, "type", s.accountType); put(p, "profile", s.profile);
         put(p, "combat", s.combatLevel); put(p, "total", s.totalLevel);
         put(p, "identityAt", s.identityAt); put(p, "skillsAt", s.skillsAt); put(p, "questsAt", s.questsAt);
@@ -69,7 +71,20 @@ public final class SnapshotStore
         writeContainer(p, "bank", s.bank);
         writeContainer(p, "inventory", s.inventory);
         writeContainer(p, "equipment", s.equipment);
-        StringWriter writer = new StringWriter(); p.store(writer, "Account Report cache; local data, schema 1");
+        put(p, "unlocks.count", s.unlocks.size());
+        for (int i = 0; i < s.unlocks.size(); i++)
+        {
+            Snapshot.UnlockRow row = s.unlocks.get(i); String k = "unlocks." + i + ".";
+            put(p, k + "kind", row.kind.name()); put(p, k + "value", row.value); put(p, k + "at", row.observedAt);
+        }
+        put(p, "bosses.count", s.bossCounts.size());
+        for (int i = 0; i < s.bossCounts.size(); i++)
+        {
+            Snapshot.BossCount row = s.bossCounts.get(i); String k = "bosses." + i + ".";
+            put(p, k + "name", row.name); put(p, k + "count", row.count);
+            put(p, k + "at", row.observedAt); put(p, k + "source", row.source.name());
+        }
+        StringWriter writer = new StringWriter(); p.store(writer, "Account Report cache; local data, schema 2");
         return writer.toString();
     }
 
@@ -77,7 +92,8 @@ public final class SnapshotStore
     {
         if (data.length() > 8_000_000) { throw new IOException("Oversized cache"); }
         Properties p = new Properties(); p.load(new StringReader(data));
-        if (!"1".equals(required(p, "schema")) || !expectedKey.equals(required(p, "key")))
+        String schema = required(p, "schema");
+        if ((!schema.equals("1") && !schema.equals("2")) || !expectedKey.equals(required(p, "key")))
         { throw new IOException("Cache version or character mismatch"); }
         Snapshot.Builder b = new Snapshot.Builder(expectedKey);
         b.reportId = UUID.fromString(required(p, "reportId")).toString();
@@ -112,6 +128,33 @@ public final class SnapshotStore
         { throw new IOException("Missing observation time"); }
         b.bank = readContainer(p, "bank"); b.inventory = readContainer(p, "inventory");
         b.equipment = readContainer(p, "equipment");
+        if (schema.equals("2"))
+        {
+            List<Snapshot.UnlockRow> unlocks = new ArrayList<>();
+            HashSet<Progression.Unlock> seenUnlocks = new HashSet<>();
+            for (int i = 0, n = count(p, "unlocks.count"); i < n; i++)
+            {
+                String k = "unlocks." + i + ".";
+                Progression.Unlock kind = Progression.Unlock.valueOf(required(p, k + "kind"));
+                if (!seenUnlocks.add(kind)) { throw new IOException("Duplicate unlock observation"); }
+                unlocks.add(new Snapshot.UnlockRow(kind, required(p, k + "value"), time(p, k + "at")));
+            }
+            // Missing new fields after a v1 migration remain unknown, never false.
+            for (Snapshot.UnlockRow row : Progression.unknownUnlocks())
+            { if (!seenUnlocks.contains(row.kind)) { unlocks.add(row); } }
+            b.unlocks = unlocks;
+            List<Snapshot.BossCount> bosses = new ArrayList<>();
+            HashSet<String> seenBosses = new HashSet<>();
+            for (int i = 0, n = count(p, "bosses.count"); i < n; i++)
+            {
+                String k = "bosses." + i + ".";
+                Snapshot.BossCount row = new Snapshot.BossCount(required(p, k + "name"), number(p, k + "count"),
+                    time(p, k + "at"), Progression.BossSource.valueOf(required(p, k + "source")));
+                if (!seenBosses.add(row.name.toLowerCase(Locale.ROOT))) { throw new IOException("Duplicate encounter count"); }
+                bosses.add(row);
+            }
+            b.bossCounts = bosses;
+        }
         return b.build();
     }
 

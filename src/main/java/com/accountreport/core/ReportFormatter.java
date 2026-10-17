@@ -49,7 +49,11 @@ public final class ReportFormatter
         line(out, "Useful-item matching covers only the bundled catalog; absence does not prove non-ownership.");
         line(out, "Quest API entries include miniquests/subquests; this API exposes no reliable type flag.");
         line(out, "Quest counts are API-entry counts, not a count of full quests or quest points.");
-        line(out, "Deferred: diaries, Slayer task/points/rewards, minigame currencies, unlock flags, Word export.");
+        line(out, "Unlock flags are direct observations, not a guarantee a prayer is usable at current levels or in every world.");
+        line(out, "Boss/encounter counts are observed totals, not session kills. Unlisted bosses are Unknown, not zero.");
+        line(out, "Open your own Combat Achievements boss details to observe existing counts; personal KC messages also update them.");
+        line(out, "No hiscores lookup, other players' logs, inferred KC, or automatic interface/game actions are used.");
+        line(out, "Deferred: diaries, Slayer task/points/rewards, minigame currencies, other unlock flags, Word export.");
         line(out, "Private identifiers and credentials are never included. No account data is sent anywhere.");
         line(out, "Disabled sections also exclude their containers from the useful-items summary.");
 
@@ -75,6 +79,24 @@ public final class ReportFormatter
                 line(out, state + " (" + rows.size() + "):");
                 rows.forEach(q -> line(out, "  " + clean(q.name)));
             }
+        }
+        if (options.unlocks)
+        {
+            section(out, "VERIFIED UNLOCK FLAGS (last observed)");
+            s.unlocks.stream().sorted(Comparator.comparing(r -> r.kind.label)).forEach(r -> line(out,
+                r.kind.label + ": " + r.value + " | " + freshness(r.observedAt, sessionStart)));
+            line(out, "Knight Waves is the training requirement used by the prayer interface; levels and other requirements remain separate.");
+            line(out, "A scroll unlock flag does not mean the prayer is active or usable with your current stats.");
+        }
+        if (options.bossCounts)
+        {
+            section(out, "BOSS / ENCOUNTER COUNTS (last-observed totals)");
+            if (s.bossCounts.isEmpty()) { line(out, "Boss counts not yet observed. Unknown, not zero."); }
+            s.bossCounts.stream().sorted(Comparator.comparing(r -> r.name, String.CASE_INSENSITIVE_ORDER)).forEach(r -> line(out,
+                r.name + " | Count " + r.count + " | Source: " + r.source.label
+                    + " | " + freshness(r.observedAt, sessionStart)));
+            line(out, "Unlisted bosses: Unknown. Open Combat Achievements > Bosses > a boss's details to refresh it.");
+            line(out, "Raid modes and different encounters are separate; counts are never added together.");
         }
         if (options.bank) { container(out, "BANK", s.bank, sessionStart); }
         if (options.inventory) { container(out, "INVENTORY", s.inventory, sessionStart); }

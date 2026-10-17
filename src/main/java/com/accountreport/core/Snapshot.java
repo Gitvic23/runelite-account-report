@@ -10,8 +10,8 @@ import java.util.UUID;
 /** Immutable values; no client objects may cross into storage or the UI. */
 public final class Snapshot
 {
-    public static final String PLUGIN_VERSION = "1.0.0";
-    public static final int FORMAT_VERSION = 1;
+    public static final String PLUGIN_VERSION = "1.1.0";
+    public static final int FORMAT_VERSION = 2;
     public final String key; // Internal only: never render this or use it in report filenames.
     public final String reportId;
     public final String name;
@@ -28,6 +28,8 @@ public final class Snapshot
     public final Container bank;
     public final Container inventory;
     public final Container equipment;
+    public final List<UnlockRow> unlocks;
+    public final List<BossCount> bossCounts;
 
     public Snapshot(Builder b)
     {
@@ -47,6 +49,8 @@ public final class Snapshot
         bank = Objects.requireNonNull(b.bank);
         inventory = Objects.requireNonNull(b.inventory);
         equipment = Objects.requireNonNull(b.equipment);
+        unlocks = copy(b.unlocks);
+        bossCounts = copy(b.bossCounts);
     }
 
     private static <T> List<T> copy(List<T> input)
@@ -74,6 +78,8 @@ public final class Snapshot
         public Container bank = Container.unknown();
         public Container inventory = Container.unknown();
         public Container equipment = Container.unknown();
+        public List<UnlockRow> unlocks = Progression.unknownUnlocks();
+        public List<BossCount> bossCounts = Collections.emptyList();
 
         public Builder(String key) { this.key = key; }
         private Builder(Snapshot s)
@@ -84,6 +90,7 @@ public final class Snapshot
             identityAt = s.identityAt; skillsAt = s.skillsAt; questsAt = s.questsAt;
             questPoints = s.questPoints; skills = s.skills; quests = s.quests;
             bank = s.bank; inventory = s.inventory; equipment = s.equipment;
+            unlocks = s.unlocks; bossCounts = s.bossCounts;
         }
         public Snapshot build() { return new Snapshot(this); }
     }
@@ -96,6 +103,36 @@ public final class Snapshot
         public final Integer nextXp;
         public SkillRow(String name, Integer level, Integer xp, Integer nextXp)
         { this.name = name; this.level = level; this.xp = xp; this.nextXp = nextXp; }
+    }
+
+    public static final class UnlockRow
+    {
+        public final Progression.Unlock kind;
+        public final String value;
+        public final Instant observedAt;
+        public UnlockRow(Progression.Unlock kind, String value, Instant observedAt)
+        {
+            this.kind = Objects.requireNonNull(kind);
+            boolean valid = value != null && (value.equals("Unknown") || (kind == Progression.Unlock.KNIGHT_WAVES
+                ? List.of("Completed", "Incomplete").contains(value) : List.of("Unlocked", "Not unlocked").contains(value)));
+            if (!valid || (observedAt == null && !value.equals("Unknown")))
+            { throw new IllegalArgumentException("Invalid unlock observation"); }
+            this.value = value; this.observedAt = observedAt;
+        }
+    }
+
+    public static final class BossCount
+    {
+        public final String name;
+        public final int count;
+        public final Instant observedAt;
+        public final Progression.BossSource source;
+        public BossCount(String name, int count, Instant observedAt, Progression.BossSource source)
+        {
+            if (count < 0) { throw new IllegalArgumentException("Negative encounter count"); }
+            this.name = Progression.bossName(name); this.count = count;
+            this.observedAt = Objects.requireNonNull(observedAt); this.source = Objects.requireNonNull(source);
+        }
     }
 
     public static final class QuestRow

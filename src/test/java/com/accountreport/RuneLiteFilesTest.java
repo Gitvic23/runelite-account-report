@@ -1,6 +1,7 @@
 package com.accountreport;
 
 import com.accountreport.core.Fixtures;
+import com.accountreport.core.Progression;
 import com.accountreport.core.ReportWriter;
 import com.accountreport.core.Snapshot;
 import com.accountreport.core.SnapshotStore;
@@ -52,5 +53,26 @@ public class RuneLiteFilesTest
             try { files.atomicWrite(name, "bad"); fail("Unsafe filename accepted: " + name); }
             catch (IllegalArgumentException expected) { }
         }
+    }
+
+    @Test public void actualDiskUpgradeRetainsOldBankAndNewEncounterEvidenceAcrossReload() throws Exception
+    {
+        Path directory = temp.newFolder().toPath();
+        RuneLiteFiles files = new RuneLiteFiles(Filepath.Unchecked.getRooted(directory));
+        String legacy;
+        try (var in = getClass().getResourceAsStream("/fixtures/cache-v1.properties"))
+        { assertNotNull(in); legacy = new String(in.readAllBytes(), StandardCharsets.UTF_8); }
+        files.atomicWrite("cache-" + Fixtures.KEY + ".properties", legacy);
+        SnapshotStore store = new SnapshotStore(files);
+        Snapshot.Builder b = store.load(Fixtures.KEY).snapshot.toBuilder();
+        b.bossCounts = List.of(new Snapshot.BossCount("Zulrah", 0, Fixtures.TIME, Progression.BossSource.COMBAT_ACHIEVEMENTS));
+        b.unlocks = List.of(new Snapshot.UnlockRow(Progression.Unlock.KNIGHT_WAVES, "Completed", Fixtures.TIME));
+        store.save(b.build());
+        Snapshot restored = new SnapshotStore(new RuneLiteFiles(Filepath.Unchecked.getRooted(directory))).load(Fixtures.KEY).snapshot;
+        assertEquals(12791, restored.bank.items.get(0).id); assertEquals(Fixtures.TIME, restored.bank.observedAt);
+        assertEquals(Fixtures.character().reportId, restored.reportId);
+        assertEquals(0, restored.bossCounts.get(0).count); assertEquals(Fixtures.TIME, restored.bossCounts.get(0).observedAt);
+        assertEquals("Completed", restored.unlocks.get(0).value);
+        assertTrue(files.read("cache-" + Fixtures.KEY + ".properties").contains("schema=2"));
     }
 }

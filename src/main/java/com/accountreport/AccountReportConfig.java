@@ -32,4 +32,10 @@ public interface AccountReportConfig extends Config
 
     @ConfigItem(keyName = "useful", name = "Include useful items", description = "Summarize bundled progression item catalog without combining location totals", position = 7)
     default boolean useful() { return true; }
+
+    @ConfigItem(keyName = "unlocks", name = "Include unlock flags", description = "Knight Waves training and verified prayer unlock flags", position = 8)
+    default boolean unlocks() { return true; }
+
+    @ConfigItem(keyName = "bossCounts", name = "Include boss counts", description = "Last-observed personal boss-page or system-message totals; missing counts stay unknown", position = 9)
+    default boolean bossCounts() { return true; }
 }

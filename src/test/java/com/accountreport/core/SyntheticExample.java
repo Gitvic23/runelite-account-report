@@ -17,6 +17,15 @@ public final class SyntheticExample
             Fixtures.item(554, "Fire rune", 2500), Fixtures.item(9185, "Rune crossbow", 1)));
         b.inventory = new Snapshot.Container(Fixtures.TIME, List.of(Fixtures.item(12791, "Rune pouch", 1)));
         b.equipment = new Snapshot.Container(Fixtures.TIME, List.of(new Snapshot.ItemRow(6570, "Fire cape", 1, "CAPE", -1)));
+        b.unlocks = List.of(new Snapshot.UnlockRow(Progression.Unlock.KNIGHT_WAVES, "Completed", Fixtures.TIME),
+            new Snapshot.UnlockRow(Progression.Unlock.RIGOUR, "Not unlocked", Fixtures.TIME),
+            new Snapshot.UnlockRow(Progression.Unlock.AUGURY, "Unknown", null),
+            new Snapshot.UnlockRow(Progression.Unlock.PRESERVE, "Unlocked", Fixtures.TIME),
+            new Snapshot.UnlockRow(Progression.Unlock.DEADEYE, "Not unlocked", Fixtures.TIME),
+            new Snapshot.UnlockRow(Progression.Unlock.MYSTIC_VIGOUR, "Not unlocked", Fixtures.TIME));
+        b.bossCounts = List.of(new Snapshot.BossCount("Barrows", 42, Fixtures.TIME.minusSeconds(3600), Progression.BossSource.COMBAT_ACHIEVEMENTS),
+            new Snapshot.BossCount("Gauntlet", 3, Fixtures.TIME, Progression.BossSource.GAME_MESSAGE),
+            new Snapshot.BossCount("Corrupted Gauntlet", 0, Fixtures.TIME, Progression.BossSource.COMBAT_ACHIEVEMENTS));
         String text = "SYNTHETIC EXAMPLE ONLY — FICTIONAL ACCOUNT, ABBREVIATED SKILLS/QUESTS\n"
             + "The real plugin lists every skill and quest API entry. These fixture values are not an account assessment.\n\n"
             + new ReportFormatter(UsefulCatalog.load(), ZoneId.of("America/Chicago")).format(

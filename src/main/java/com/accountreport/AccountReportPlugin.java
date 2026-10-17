@@ -1,6 +1,7 @@
 package com.accountreport;
 
 import com.accountreport.core.Identity;
+import com.accountreport.core.Progression;
 import com.accountreport.core.ReportFormatter;
 import com.accountreport.core.ReportOptions;
 import com.accountreport.core.ReportWriter;
@@ -26,6 +27,7 @@ import javax.swing.SwingUtilities;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.gameval.InterfaceID;
@@ -69,6 +71,8 @@ public final class AccountReportPlugin extends Plugin
     private ReportWriter writer;
     private ReportFormatter formatter;
     private RuneLiteCollector collector;
+    private ProgressionCollector progressionCollector;
+    private Snapshot.BossCount lastBossPage;
     private Instant sessionStart;
     private Instant lastPoll = Instant.EPOCH;
     private Instant lastQuestPoll = Instant.EPOCH;
@@ -102,6 +106,7 @@ public final class AccountReportPlugin extends Plugin
             if (!active(executor)) { return; }
             gate.clear(); snapshot = null; store = null; writer = null; formatter = null;
             collector = new RuneLiteCollector(client);
+            progressionCollector = new ProgressionCollector(client);
             resetObservations();
         });
         executor.execute(() -> {
@@ -184,6 +189,18 @@ public final class AccountReportPlugin extends Plugin
     }
 
     @Subscribe
+    public void onChatMessage(ChatMessage event)
+    {
+        if (!enabled || snapshot == null || loggedInTicks < 2 || !sameCharacter(snapshot.key)) { return; }
+        Snapshot.BossCount count = progressionCollector.fromChat(event, Instant.now());
+        if (count == null) { return; }
+        Snapshot.Builder b = snapshot.toBuilder();
+        b.bossCounts = Progression.observeBoss(b.bossCounts, count);
+        snapshot = b.build(); unsaved = true;
+        updatePanel();
+    }
+
+    @Subscribe
     public void onGameTick(GameTick event)
     {
         if (!enabled || store == null || client.getGameState() != GameState.LOGGED_IN || !identify()) { return; }
@@ -243,12 +260,16 @@ public final class AccountReportPlugin extends Plugin
         Instant now = Instant.now();
         boolean poll = force || now.isAfter(lastPoll.plusSeconds(15));
         boolean questPoll = force || now.isAfter(lastQuestPoll.plusSeconds(60));
+        Snapshot.BossCount bossPage = progressionCollector.fromPersonalBossPage(now);
+        boolean bossPageChanged = bossPage != null && (force || poll || lastBossPage == null
+            || !bossPage.name.equals(lastBossPage.name) || bossPage.count != lastBossPage.count);
+        if (bossPage == null) { lastBossPage = null; }
         Widget bank = client.getWidget(InterfaceID.Bankmain.ITEMS);
         boolean bankReady = bankReceived && bank != null && !bank.isHidden();
-        if (!poll && !questPoll && !inventoryDirty && !equipmentDirty && !bankReady) { return; }
+        if (!poll && !questPoll && !inventoryDirty && !equipmentDirty && !bankReady && !bossPageChanged) { return; }
         Snapshot.Builder b = snapshot.toBuilder();
         collector.identity(b, now);
-        if (poll) { collector.skills(b, now); lastPoll = now; }
+        if (poll) { collector.skills(b, now); progressionCollector.unlocks(b, now); lastPoll = now; }
         if (questPoll) { collector.quests(b, now); lastQuestPoll = now; }
         if (poll || inventoryDirty)
         {
@@ -267,6 +288,11 @@ public final class AccountReportPlugin extends Plugin
             // Widget is only a readiness gate. Never read widget items: searches/tabs hide those.
             Snapshot.Container c = collector.container(InventoryID.BANK, now);
             if (c != null) { b.bank = c; bankReceived = false; }
+        }
+        if (bossPageChanged)
+        {
+            b.bossCounts = Progression.observeBoss(b.bossCounts, bossPage);
+            lastBossPage = bossPage;
         }
         snapshot = b.build(); unsaved = true;
         updatePanel();
@@ -311,7 +337,8 @@ public final class AccountReportPlugin extends Plugin
             Snapshot exported = snapshot;
             ReportFormatter currentFormatter = formatter;
             ReportWriter currentWriter = writer;
-            ReportOptions options = new ReportOptions(config.skills(), config.quests(), config.bank(), config.inventory(), config.equipment(), config.useful());
+            ReportOptions options = new ReportOptions(config.skills(), config.quests(), config.bank(), config.inventory(),
+                config.equipment(), config.useful(), config.unlocks(), config.bossCounts());
             boolean history = config.history();
             Instant generated = Instant.now();
             Instant session = sessionStart;
@@ -379,6 +406,7 @@ public final class AccountReportPlugin extends Plugin
     private void resetObservations()
     {
         bankReceived = false; inventoryDirty = false; equipmentDirty = false; unsaved = false;
+        lastBossPage = null;
         loggedInTicks = 0; lastPoll = Instant.EPOCH; lastQuestPoll = Instant.EPOCH; lastSave = Instant.EPOCH;
     }
     private boolean active(ExecutorService executor) { return enabled && worker == executor; }
