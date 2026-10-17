@@ -57,19 +57,22 @@ All production file I/O uses RuneLite's current `Filepath` API in its plugin-own
    ```
 
    The first run downloads Gradle and RuneLite dependencies. No separate Gradle installation is needed. Look for `BUILD SUCCESSFUL`. Test results are in `build\reports\tests\test\index.html`. The JAR in `build\libs` is not an installer.
-6. Launch the development client:
+6. If you use a **Jagex Account**, first complete the [Windows development-login steps](docs/JAGEX-ACCOUNT-WINDOWS.md). Running Gradle directly does not inherit a login from the Jagex Launcher. RuneLite's official procedure temporarily saves a local authentication file through your normal RuneLite client; the development client then reads it. No plugin login-code change is needed.
+
+   Launch the development client from the project folder:
 
    ```powershell
    .\gradlew.bat run
    ```
 
-   Keep PowerShell open. This uses the official external-plugin launcher with developer mode and debug logs. Close another RuneLite instance if needed to avoid profile/cache conflicts.
-7. If you use a **Jagex Account**, follow RuneLite's official [Using Jagex Accounts](https://github.com/runelite/runelite/wiki/Using-Jagex-Accounts) guide on your own PC before development-client login. It explains launcher settings and protecting/deleting a temporary credentials file. **Never upload `credentials.properties`, credentials, session files or login tokens.** This plugin does not read them.
+7. Keep PowerShell open. This uses the official external-plugin launcher with developer mode and debug logs. Close your normal RuneLite client before running the development client. The normal client opened from the Jagex Launcher will not contain this local development plugin. After testing, follow the guide's cleanup steps to remove the temporary login file and restore any client argument you added. **Never upload `credentials.properties`, credentials, session files or login tokens.** RuneLite itself handles login; this plugin does not read them.
 8. In the development client's wrench/configuration panel, search for **Account Report Exporter** and enable it. Open the paper/report sidebar icon. Log in, wait a few seconds for observations, open your bank, and click **Export TXT report**.
 
 ### IntelliJ alternative
 
 Choose **Open**, select the project folder and import it as Gradle. Set **Project SDK** to JDK 11 and **Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JVM** to that JDK. Run the `build` task in the Gradle tool window, then `run`. Alternatively run the `main` method in `src/test/java/com/accountreport/AccountReportLauncher.java` with `--developer-mode --debug` as program arguments.
+
+The same [Jagex-account preparation and cleanup](docs/JAGEX-ACCOUNT-WINDOWS.md) applies to IntelliJ. Keep the usual Windows user/home directory so RuneLite can find its local login file.
 
 ### Find and upload the report
 
@@ -88,6 +91,7 @@ Open the TXT in Notepad and check its character name, bank time and coverage. In
 - Share the exact command, relevant PowerShell error and output of `java -version` / `javac -version`. Test failures have details in `build\reports\tests\test\index.html`.
 - RuneLite logs are under `%USERPROFILE%\.runelite\logs`, unless customized. Look for `AccountReportPlugin` in the latest `client.log` or the `run` console. Review/redact logs before sharing them; do not share credential, session, profile or settings files.
 - A `JAVA_COMPILER` or missing `javac` error means a JRE or wrong Gradle JVM: select a full JDK 11.
+- A development client without your Jagex login needs the [official temporary credential-file workflow](docs/JAGEX-ACCOUNT-WINDOWS.md). Putting the export flag in Gradle or launching the normal client alone does not load this plugin.
 - Dependency downloads need `services.gradle.org`, its official download redirects, `repo.runelite.net` and Maven Central (`repo.maven.apache.org`). Check your proxy/firewall; do not disable TLS/checksum verification.
 - For an outdated RuneLite client, run `.\gradlew.bat --refresh-dependencies build`, then launch again. The dependency follows the official template's `latest.release`; future API changes can require maintenance.
 - Old/unknown bank data: log into the correct character and close/reopen the bank. A deposit box is not the bank-observation workflow.

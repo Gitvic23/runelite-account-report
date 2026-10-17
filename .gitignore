@@ -4,3 +4,5 @@ out/
 .idea/
 *.iml
 *.log
+# RuneLite's temporary Jagex development-login file must stay outside the project.
+credentials.properties

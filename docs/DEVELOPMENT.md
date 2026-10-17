@@ -13,6 +13,8 @@ Official sources and their relevant API Javadoc were inspected before implementa
 | [Using Jagex Accounts](https://github.com/runelite/runelite/wiki/Using-Jagex-Accounts) | Local development-login instructions; credentials stay outside this plugin. |
 | [API Javadoc](https://static.runelite.net/runelite-api/apidocs/) / [client Javadoc](https://static.runelite.net/runelite-client/apidocs/) | Documentation entry points; relevant Javadoc inspected in authoritative source. |
 
+Jagex-account development setup was rechecked against the current official wiki, launcher and example-plugin sources on 2026-10-17. The existing development harness already supports RuneLite's saved-credential workflow; it needs no authentication-code changes. See [Windows preparation and full cleanup](JAGEX-ACCOUNT-WINDOWS.md) for the temporary normal-launcher argument, file-presence-only check, character selection and restoration steps. The exporter never reads authentication files, and the project does not enable credential writing itself.
+
 ## Collection contracts
 
 - `Client` inherits `OAuthApi.getAccountHash()`, documented per RuneScape account, `-1` before login. RuneLite's `ConfigManager` associates it with `RuneScapeProfileType.getCurrent(client)`. A digest of that pair keys caches. Display names, login emails and credentials are never identity keys. Jagex-login characters remain separate.
