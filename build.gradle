@@ -1,0 +1,60 @@
+plugins { id 'java' }
+
+repositories {
+    maven {
+        url = 'https://repo.runelite.net'
+        content { includeGroupByRegex('net\\.runelite.*') }
+    }
+    mavenCentral()
+}
+
+def runeLiteVersion = 'latest.release'
+group = 'com.accountreport'
+version = '1.0.0'
+
+dependencies {
+    compileOnly "net.runelite:client:${runeLiteVersion}"
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "net.runelite:client:${runeLiteVersion}"
+    testImplementation "net.runelite:jshell:${runeLiteVersion}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(11)
+}
+test { useJUnit() }
+
+tasks.register('run', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.accountreport.AccountReportLauncher'
+    jvmArgs '-ea'
+    args '--developer-mode', '--debug'
+}
+
+// Independently exercise the real core implementation when RuneLite's repository
+// is unavailable. This does not substitute for compiling the RuneLite adapter.
+sourceSets {
+    core {
+        java.srcDir 'src/main/java'
+        java.include 'com/accountreport/core/**'
+        resources.srcDir 'src/main/resources'
+    }
+    coreTest {
+        java.srcDir 'src/test/java'
+        java.include 'com/accountreport/core/**'
+        compileClasspath += sourceSets.core.output
+        runtimeClasspath += sourceSets.core.output
+    }
+}
+dependencies { coreTestImplementation 'junit:junit:4.13.2' }
+tasks.register('coreTest', Test) {
+    testClassesDirs = sourceSets.coreTest.output.classesDirs
+    classpath = sourceSets.coreTest.runtimeClasspath
+    useJUnit()
+}
+tasks.register('exampleReport', JavaExec) {
+    classpath = sourceSets.coreTest.runtimeClasspath
+    mainClass = 'com.accountreport.core.SyntheticExample'
+    args layout.projectDirectory.file('docs/example-report.txt').asFile.absolutePath
+}

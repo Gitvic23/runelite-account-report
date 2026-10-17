@@ -1,0 +1,94 @@
+SYNTHETIC EXAMPLE ONLY — FICTIONAL ACCOUNT, ABBREVIATED SKILLS/QUESTS
+The real plugin lists every skill and quest API entry. These fixture values are not an account assessment.
+
+ACCOUNT REPORT EXPORTER
+Character: Synthetic Iron
+Account type: Ironman | World profile: STANDARD
+Combat level: 90 | Total level: 1500
+Generated: 2026-10-17 11:02:00 -05:00 [America/Chicago]
+Plugin version: 1.0.0 | Report format: 1
+Identity observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Skills observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Quests observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Bank observed: 2026-10-16 11:00:00 -05:00 [America/Chicago] (cached observation; may be stale)
+Inventory observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Equipment observed: 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+
+DATA COVERAGE AND LIMITATIONS
+All values are last observed, not live knowledge. Cached observations may be stale.
+Snapshots from different times can disagree; location quantities are NEVER added together.
+This plugin cannot observe changes on mobile or another client. Reopen RuneLite, log in,
+and open your bank to refresh it. Login alone does not refresh the bank.
+Bank uses the full server item container, independent of searches, filters and tabs.
+Placeholders and nonpositive quantities are excluded. Original IDs and variants are retained.
+Noted items show their unnoted reference ID; neither IDs nor charges are silently merged.
+Excluded: POH, STASH, seed vault, death/group storage, potion storage and other containers.
+Container ownership does not reveal contents, charges, stored supplies or account unlocks.
+Useful-item matching covers only the bundled catalog; absence does not prove non-ownership.
+Quest API entries include miniquests/subquests; this API exposes no reliable type flag.
+Quest counts are API-entry counts, not a count of full quests or quest points.
+Deferred: diaries, Slayer task/points/rewards, minigame currencies, unlock flags, Word export.
+Private identifiers and credentials are never included. No account data is sent anywhere.
+Disabled sections also exclude their containers from the useful-items summary.
+
+SKILLS (actual levels; no boosted/drained levels)
+Attack | Level 99 | XP 13034431 | XP to next actual level: N/A (maximum actual level)
+Magic | Level 75 | XP 1210421 | XP to next actual level: 126022
+
+QUESTS AND MINIQUEST API ENTRIES
+Quest points: 150
+Completed (1):
+  Cook's Assistant
+In progress (1):
+  Dragon Slayer I
+Not started (1):
+  Dragon Slayer II
+Unknown (1):
+  Future API entry
+
+BANK (last observed)
+2026-10-16 11:00:00 -05:00 [America/Chicago] (cached observation; may be stale)
+Open your bank to refresh.
+  Fire rune [ID 554] x 2500
+  Herb sack [ID 13226] x 1
+  Rune crossbow [ID 9185] x 1
+  Rune pouch [ID 12791] x 1
+
+INVENTORY (last observed)
+2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+  Rune pouch [ID 12791] x 1
+
+EQUIPMENT (last observed)
+2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+  CAPE: Fire cape [ID 6570] x 1
+
+USEFUL ITEMS (separate last-observed quantities by location)
+Barrows gloves:
+  Not found in observed containers (enabled sections only).
+Dragon defender:
+  Not found in observed containers (enabled sections only).
+Essence pouches:
+  Not found in observed containers (enabled sections only).
+Fire cape:
+  Equipment: Fire cape [ID 6570] x 1 | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Fishing barrels:
+  Not found in observed containers (enabled sections only).
+Forestry kit and baskets:
+  Not found in observed containers (enabled sections only).
+Gem bag:
+  Not found in observed containers (enabled sections only).
+Graceful pieces:
+  Not found in observed containers (enabled sections only).
+Herb sack:
+  Bank: Herb sack [ID 13226] x 1 | 2026-10-16 11:00:00 -05:00 [America/Chicago] (cached observation; may be stale)
+Rune crossbow:
+  Bank: Rune crossbow [ID 9185] x 1 | 2026-10-16 11:00:00 -05:00 [America/Chicago] (cached observation; may be stale)
+Rune pouches:
+  Bank: Rune pouch [ID 12791] x 1 | 2026-10-16 11:00:00 -05:00 [America/Chicago] (cached observation; may be stale)
+  Inventory: Rune pouch [ID 12791] x 1 | 2026-10-17 11:00:00 -05:00 [America/Chicago] (observed this session; may now be stale)
+Seed box:
+  Not found in observed containers (enabled sections only).
+Slayer helmets:
+  Not found in observed containers (enabled sections only).
+Teleport jewelry:
+  Not found in observed containers (enabled sections only).
