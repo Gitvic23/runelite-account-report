@@ -1,5 +1,13 @@
 # Validation performed
 
+## Version 1.1.1: Plugin Hub process-execution fix
+
+Validated on 2026-10-19 with the same JDK and wrapper described below. `./gradlew clean build coreTest exampleReport --console=plain` completed successfully: 58 full-suite tests and the 43-test core subset passed, with no failures, errors or skips. The generated example reports version 1.1.1.
+
+Removed the `LinkBrowser.open` call and import. The folder-path button now copies and displays the report directory for manual use in File Explorer. Inspection of the built JAR's 28 class constant pools found no references to `LinkBrowser`, `java.awt.Desktop`, `java.lang.Runtime` or `java.lang.ProcessBuilder`. This is a local check of the reported restriction, not a claim that all Plugin Hub checks or review have passed. Windows clipboard/File Explorer interaction still requires manual verification using the updated checklist.
+
+## Version 1.1.0: progression observations
+
 Version **1.1.0** validated in the cloud on 2026-10-17 with Eclipse Temurin JDK 11.0.28+6, the official Gradle 8.10 wrapper and released RuneLite client/API 1.13.2. The build follows the official template's `latest.release`; later refreshes can select a newer release.
 
 Command (from the project root, with the installed full JDK activated):

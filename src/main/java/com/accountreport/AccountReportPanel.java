@@ -21,7 +21,7 @@ final class AccountReportPanel extends PluginPanel
     private final JButton export = new JButton("Export TXT report");
     private final JButton copy = new JButton("Copy report to clipboard");
 
-    AccountReportPanel(Runnable onExport, Runnable onCopy, Runnable onOpen)
+    AccountReportPanel(Runnable onExport, Runnable onCopy, Runnable onCopyFolderPath)
     {
         setLayout(new BorderLayout(0, 12));
         setBorder(BorderFactory.createEmptyBorder(10, 8, 10, 8));
@@ -30,11 +30,11 @@ final class AccountReportPanel extends PluginPanel
         configureText(observations); configureText(feedback);
         body.add(observations, BorderLayout.CENTER);
         JPanel buttons = new JPanel(new GridLayout(0, 1, 0, 8));
-        JButton open = new JButton("Open report folder");
+        JButton copyFolderPath = new JButton("Copy report folder path");
         export.addActionListener(e -> onExport.run());
         copy.addActionListener(e -> onCopy.run());
-        open.addActionListener(e -> onOpen.run());
-        buttons.add(export); buttons.add(copy); buttons.add(open);
+        copyFolderPath.addActionListener(e -> onCopyFolderPath.run());
+        buttons.add(export); buttons.add(copy); buttons.add(copyFolderPath);
         body.add(buttons, BorderLayout.SOUTH);
         add(body, BorderLayout.CENTER); add(feedback, BorderLayout.SOUTH);
         disconnected();

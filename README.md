@@ -2,7 +2,7 @@
 
 A local RuneLite plugin that exports an Old School RuneScape character to a readable UTF-8 TXT report for manually sharing with ChatGPT. **No AI connection, API key, external account, server or account-data network requests.** You decide whether to share the file.
 
-This is a **development plugin**, not a reviewed or published Plugin Hub installation. Nothing has been submitted or published. Dropping its JAR into normal RuneLite does not install it.
+This source is for development and Plugin Hub review. Normal RuneLite installation requires Plugin Hub approval and distribution. Dropping its JAR into normal RuneLite does not install it.
 
 ## Implemented
 
@@ -14,7 +14,7 @@ This is a **development plugin**, not a reviewed or published Plugin Hub install
 - Full received bank container, independent of searches, tabs and filters, with alphabetical item names, original IDs and quantities. Placeholders and bank fillers are excluded.
 - Inventory and equipment, with independent timestamps and occupied equipment slots. Valid empty containers differ from unavailable containers.
 - Useful progression items: rune pouches, herb sack, gem bag, seed box, fishing barrels, forestry kits/baskets, essence pouches, graceful, Slayer helmets, rune crossbow, dragon defender, fire cape, Barrows gloves and common teleport jewelry. The [maintainable catalog](src/main/resources/useful-items.tsv) contains verified IDs and named official constants.
-- Sidebar buttons for TXT export, clipboard copy and opening the report folder, with observation times and success/error feedback.
+- Sidebar buttons for TXT export, clipboard copy and copying the report folder path, with observation times and success/error feedback.
 - Section toggles, automatic local exports (off by default, at most one attempt per minute), and timestamped history (off by default). Manual exports refresh skills/quests and available inventory/equipment first.
 
 See the [synthetic example report](docs/example-report.txt). Its fictional skill/quest dataset is deliberately abbreviated; real reports enumerate every client API entry.
@@ -34,6 +34,8 @@ All production file I/O uses RuneLite's current `Filepath` API in its plugin-own
 **Deferred:** achievement diaries, current Slayer task, Slayer points/reward unlocks, minigame currencies/rewards, other account flags and Word output. These require further state-specific verification and are never filled with guessed zeros. See [API evidence and decisions](docs/DEVELOPMENT.md).
 
 ## Version 1.1: unlocks, boss counts and updating
+
+Version **1.1.1** replaces the folder-opening button with **Copy report folder path** to comply with Plugin Hub's restriction on process execution. Paste the copied path into File Explorer's address bar and press Enter. Reports and caches retain the same locations and formats.
 
 The report now includes **VERIFIED UNLOCK FLAGS** and **BOSS / ENCOUNTER COUNTS**; both sections default to enabled. The sidebar also shows Knight Waves status and the number of observed encounters. Log in and export to refresh unlocks. To observe an existing boss total, open the game's **Combat Achievements → Bosses → the boss's details**, wait a few seconds, and export. Repeat for bosses you want covered. Supported personal kill-count messages update totals as you play with the plugin enabled. No hiscores service, account-data upload, automated clicks or gameplay actions are used.
 
@@ -93,7 +95,7 @@ The same [Jagex-account preparation and cleanup](docs/JAGEX-ACCOUNT-WINDOWS.md) 
 
 ### Find and upload the report
 
-Click **Open report folder**. By default on Windows it is:
+Click **Copy report folder path**, open File Explorer, paste into its address bar and press Enter. By default on Windows it is:
 
 ```text
 %USERPROFILE%\.runelite\plugin-data\account-report-exporter\reports
@@ -112,7 +114,7 @@ Open the TXT in Notepad and check its character name, bank time and coverage. In
 - Dependency downloads need `services.gradle.org`, its official download redirects, `repo.runelite.net` and Maven Central (`repo.maven.apache.org`). Check your proxy/firewall; do not disable TLS/checksum verification.
 - For an outdated RuneLite client, run `.\gradlew.bat --refresh-dependencies build`, then launch again. The dependency follows the official template's `latest.release`; future API changes can require maintenance.
 - Old/unknown bank data: log into the correct character and close/reopen the bank. A deposit box is not the bank-observation workflow.
-- Export errors: check disk space and directory permissions. If clipboard access fails, export TXT. The RuneLite folder helper offers to copy the path if opening Explorer fails.
+- Export errors: check disk space and directory permissions. If clipboard access fails, export TXT. The folder-path button also displays the actual report folder path so you can enter it manually in File Explorer.
 
 ## Validation and developer notes
 

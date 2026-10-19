@@ -10,7 +10,7 @@ import java.util.UUID;
 /** Immutable values; no client objects may cross into storage or the UI. */
 public final class Snapshot
 {
-    public static final String PLUGIN_VERSION = "1.1.0";
+    public static final String PLUGIN_VERSION = "1.1.1";
     public static final int FORMAT_VERSION = 2;
     public final String key; // Internal only: never render this or use it in report filenames.
     public final String reportId;

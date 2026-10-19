@@ -42,7 +42,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.Filepath;
-import net.runelite.client.util.LinkBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +97,7 @@ public final class AccountReportPlugin extends Plugin
         exporting.set(false);
         SwingUtilities.invokeLater(() -> {
             if (!active(executor)) { return; }
-            panel = new AccountReportPanel(() -> requestExport(false, false), () -> requestExport(true, false), this::openFolder);
+            panel = new AccountReportPanel(() -> requestExport(false, false), () -> requestExport(true, false), this::copyReportFolderPath);
             navigation = NavigationButton.builder().tooltip("Account Report Exporter").icon(icon()).priority(8).panel(panel).build();
             toolbar.addNavigation(navigation);
         });
@@ -367,7 +366,7 @@ public final class AccountReportPlugin extends Plugin
                         else
                         {
                             String name = currentWriter.write(exported, text, history, generated);
-                            if (visibleToken == token) { feedback("Saved UTF-8 report: " + name + "\nUse Open report folder to find it."); }
+                            if (visibleToken == token) { feedback("Saved UTF-8 report: " + name + "\nUse Copy report folder path, then paste into File Explorer's address bar."); }
                         }
                     }
                     catch (IOException | RuntimeException e)
@@ -383,12 +382,19 @@ public final class AccountReportPlugin extends Plugin
         });
     }
 
-    private void openFolder()
+    private void copyReportFolderPath()
     {
         String path = reportDirectory;
         if (path == null) { feedback("Report folder is not ready. Check RuneLite logs."); return; }
-        LinkBrowser.open(path); // Supported RuneLite OS-folder helper, no network request.
-        feedback("Opening report folder. If unavailable, RuneLite offers to copy its path.");
+        try
+        {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(path), null);
+            feedback("Report folder path copied. Paste into File Explorer's address bar and press Enter.\n" + path);
+        }
+        catch (RuntimeException e)
+        {
+            feedback("Clipboard unavailable. Open File Explorer and enter this report folder path:\n" + path);
+        }
     }
 
     private void updatePanel()

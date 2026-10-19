@@ -10,7 +10,7 @@ repositories {
 
 def runeLiteVersion = 'latest.release'
 group = 'com.accountreport'
-version = '1.1.0'
+version = '1.1.1'
 
 dependencies {
     compileOnly "net.runelite:client:${runeLiteVersion}"
