@@ -4,6 +4,8 @@ A local RuneLite plugin that exports an Old School RuneScape character to a read
 
 This source is for development and Plugin Hub review. Normal RuneLite installation requires Plugin Hub approval and distribution. Dropping its JAR into normal RuneLite does not install it.
 
+For daily Windows use while review is pending, follow the [desktop shortcut setup](docs/EASY-WINDOWS.md). Double-click to launch the test client, open your bank, then use **Copy report to clipboard** to paste straight into ChatGPT. No Gradle commands are needed after setup.
+
 ## Implemented
 
 - Display name, account type including unranked Group Ironman, combat/total levels, timezone, plugin/report versions and independent observation times.
